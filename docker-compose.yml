@@ -3,7 +3,15 @@ services:
     build: .
 
     ports:
-      - "${EXTERNAL_PORT:-5050}:5000"
+      - "5050:5000"
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.librecrawl.rule=Host(`crawl.creativexgrowth.com`)"
+      - "traefik.http.routers.librecrawl.entrypoints=https"
+      - "traefik.http.routers.librecrawl.tls=true"
+      - "traefik.http.services.librecrawl.loadbalancer.server.port=5000"
+      - "traefik.http.services.librecrawl.loadbalancer.server.scheme=http"
 
     volumes:
       - librecrawl_data:/app/data
@@ -24,18 +32,10 @@ services:
     command: >
       sh -c "
       FLAGS='';
-      if [ \"$$LOCAL_MODE\" = \"true\" ]; then
-        FLAGS=\"$$FLAGS --local\";
-      fi;
-      if [ \"$$REGISTRATION_DISABLED\" = \"true\" ]; then
-        FLAGS=\"$$FLAGS --disable-register\";
-      fi;
-      if [ \"$$DEMO_MODE\" = \"true\" ]; then
-        FLAGS=\"$$FLAGS --demo\";
-      fi;
-      if [ \"$$DANGEROUSLY_SKIP_AUTH\" = \"true\" ]; then
-        FLAGS=\"$$FLAGS --dangerously-skip-auth\";
-      fi;
+      if [ \"$$LOCAL_MODE\" = \"true\" ]; then FLAGS=\"$$FLAGS --local\"; fi;
+      if [ \"$$REGISTRATION_DISABLED\" = \"true\" ]; then FLAGS=\"$$FLAGS --disable-register\"; fi;
+      if [ \"$$DEMO_MODE\" = \"true\" ]; then FLAGS=\"$$FLAGS --demo\"; fi;
+      if [ \"$$DANGEROUSLY_SKIP_AUTH\" = \"true\" ]; then FLAGS=\"$$FLAGS --dangerously-skip-auth\"; fi;
       python main.py $$FLAGS"
 
     shm_size: "1gb"
