@@ -3,7 +3,7 @@ services:
     build: .
 
     ports:
-  - "${EXTERNAL_PORT:-5050}:5000"
+      - "${EXTERNAL_PORT:-5050}:5000"
 
     volumes:
       - librecrawl_data:/app/data
@@ -11,9 +11,11 @@ services:
     environment:
       - FLASK_APP=main.py
       - PYTHONUNBUFFERED=1
+      - HOST_BINDING=0.0.0.0
+      - EXTERNAL_PORT=5050
       - SECRET_KEY=replace-with-a-long-random-secret-key
       - LOCAL_MODE=false
-      - REGISTRATION_DISABLED=false
+      - REGISTRATION_DISABLED=true
       - DEMO_MODE=false
       - DANGEROUSLY_SKIP_AUTH=false
 
