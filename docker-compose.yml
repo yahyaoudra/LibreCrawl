@@ -1,19 +1,9 @@
 services:
   librecrawl:
     build: .
+
     ports:
       - "5050:5000"
-
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "python - <<'PY'\nimport urllib.request\nurllib.request.urlopen('http://127.0.0.1:5000', timeout=5)\nPY"
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
 
     volumes:
       - librecrawl_data:/app/data
@@ -46,7 +36,7 @@ services:
       fi;
       python main.py $$FLAGS"
 
-    shm_size: "2gb"
+    shm_size: "1gb"
 
 volumes:
   librecrawl_data:
