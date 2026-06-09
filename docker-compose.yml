@@ -3,17 +3,31 @@ services:
     build: .
     expose:
       - "5000"
+
+    labels:
+      - "easypanel.protocol=http"
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:5000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
     volumes:
       - librecrawl_data:/app/data
+
     environment:
       - FLASK_APP=main.py
       - PYTHONUNBUFFERED=1
-      - SECRET_KEY=change-this-to-a-long-random-secret-key
+      - SECRET_KEY=replace-with-a-long-random-secret-key
       - LOCAL_MODE=false
       - REGISTRATION_DISABLED=false
       - DEMO_MODE=false
       - DANGEROUSLY_SKIP_AUTH=false
+
     restart: unless-stopped
+
     command: >
       sh -c "
       FLAGS='';
@@ -30,6 +44,7 @@ services:
         FLAGS=\"$$FLAGS --dangerously-skip-auth\";
       fi;
       python main.py $$FLAGS"
+
     shm_size: "2gb"
 
 volumes:
