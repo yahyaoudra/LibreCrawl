@@ -4,30 +4,15 @@ services:
     expose:
       - "5000"
     volumes:
-      # Persist the user database and settings
-      - ./data:/app/data
+      - librecrawl_data:/app/data
     environment:
       - FLASK_APP=main.py
       - PYTHONUNBUFFERED=1
-      # Set to "true" for local mode (no authentication), "false" for production
-      # Defaults to "false" — local mode disables all auth and grants admin to everyone
-      - LOCAL_MODE=${LOCAL_MODE:-false}
-      # Set to "true" to disable new user registrations
-      - REGISTRATION_DISABLED=${REGISTRATION_DISABLED:-false}
-      # Set to "true" for demo mode (1.5GB per-user memory limit)
-      - DEMO_MODE=${DEMO_MODE:-false}
-      # DANGEROUS: Set to "true" to allow login as any username with no password
-      # (username only used to separate sessions). Do NOT use in production.
-      - DANGEROUSLY_SKIP_AUTH=${DANGEROUSLY_SKIP_AUTH:-false}
-      # Uncomment these for SMTP sending
-      # - SMTP_HOST=${SMTP_HOST}
-      # - SMTP_PORT=${SMTP_PORT}
-      # - SMTP_USER=${SMTP_USER}
-      # - SMTP_PASSWORD=${SMTP_PASSWORD}
-      # - SMTP_FROM=${SMTP_FROM}
-      # - SMTP_FROM_NAME=${SMTP_FROM_NAME}
-      # Add this for correct links in the verification emails
-      # - MAIN_APP_URL=${MAIN_APP_URL}
+      - SECRET_KEY=change-this-to-a-long-random-secret-key
+      - LOCAL_MODE=false
+      - REGISTRATION_DISABLED=false
+      - DEMO_MODE=false
+      - DANGEROUSLY_SKIP_AUTH=false
     restart: unless-stopped
     command: >
       sh -c "
@@ -45,7 +30,7 @@ services:
         FLAGS=\"$$FLAGS --dangerously-skip-auth\";
       fi;
       python main.py $$FLAGS"
+    shm_size: "2gb"
 
-    # Increase shared memory size for Chrome to prevent crashes
-    shm_size: '2gb'
-
+volumes:
+  librecrawl_data:
